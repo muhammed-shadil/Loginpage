@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharedpreference/content.dart';
+import 'package:sharedpreference/login.dart';
+import 'package:sharedpreference/main.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -64,13 +67,20 @@ class Homepage extends StatelessWidget {
                   itemCount: 9),
             ),
             // SizedBox(height: 30,),
-            FilledButton(
+            FilledButton( onPressed: () async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  final islogged = prefs.setBool(NAME_KEY, false);
+
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Loginpage()));
+                },
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll<Color>(Colors.red),
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+               
                 child: const Text("Logout"))
           ],
         ),

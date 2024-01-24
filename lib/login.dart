@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharedpreference/homepage.dart';
+import 'package:sharedpreference/main.dart';
 
 class Loginpage extends StatefulWidget {
   const Loginpage({super.key});
@@ -8,13 +10,16 @@ class Loginpage extends StatefulWidget {
   State<Loginpage> createState() => _LoginpageState();
 }
 
+final _formKey = GlobalKey<FormState>();
+
 class _LoginpageState extends State<Loginpage> {
+  var namecontroller = TextEditingController();
+  var passcomtroller = TextEditingController();
   final name = RegExp(r'^[A-Za-z]+$');
   bool _password = true;
   final paswd =
       RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +63,7 @@ class _LoginpageState extends State<Loginpage> {
                         height: 20,
                       ),
                       TextFormField(
+                        controller: namecontroller,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "please enter name";
@@ -83,8 +89,9 @@ class _LoginpageState extends State<Loginpage> {
                         height: 20,
                       ),
                       TextFormField(
+                        controller: passcomtroller,
                         keyboardType: TextInputType.visiblePassword,
-                        // obscureText: _password,
+                        obscureText: _password,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "please enter a password";
@@ -95,6 +102,18 @@ class _LoginpageState extends State<Loginpage> {
                           }
                         },
                         decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            icon: Icon(_password
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            onPressed: () {
+                              setState(
+                                () {
+                                  _password = !_password;
+                                },
+                              );
+                            },
+                          ),
                           errorMaxLines: 10,
                           errorStyle:
                               const TextStyle(overflow: TextOverflow.clip),
@@ -110,14 +129,7 @@ class _LoginpageState extends State<Loginpage> {
                       ElevatedButton.icon(
                           autofocus: true,
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const Homepage(),
-                                ),
-                              );
-                            }
+                            check();
                           },
                           icon: const Icon(Icons.login),
                           label: const Text("login"))
@@ -130,5 +142,19 @@ class _LoginpageState extends State<Loginpage> {
         ),
       ),
     );
+  }
+
+  Future<void> check() async {
+    if (_formKey.currentState!.validate()) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool(NAME_KEY, true);
+      
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Homepage(),
+        ),
+      );
+    }
   }
 }
