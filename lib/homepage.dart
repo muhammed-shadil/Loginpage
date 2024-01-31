@@ -70,8 +70,10 @@ class Homepage extends StatelessWidget {
             FilledButton( onPressed: () async {
                   final SharedPreferences prefs =
                       await SharedPreferences.getInstance();
+              
                   final islogged = prefs.setBool(NAME_KEY, false);
 
+                  // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
